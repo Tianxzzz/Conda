@@ -24,7 +24,7 @@ The code for the modified models in the current project is a bit disorganized. W
 
 
 ## Acknowledgments
-The basic framework is based [DyGFormer](https://github.com/yule-BUAA/DyGLib), we are grateful to the authors for making their project codes publicly available.
+The basic framework is based on [DyGFormer](https://github.com/yule-BUAA/DyGLib), we are grateful to the authors for making their project codes publicly available.
 
 ## Citation
 Please consider citing our paper when using this project.
