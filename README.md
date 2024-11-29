@@ -22,7 +22,7 @@ python train_link_prediction.py --dataset_name wikipedia --model_name TCL --num_
 
 
 
-# Acknowledgments
+## Acknowledgments
 The basic framework is based [DyGFormer](https://github.com/yule-BUAA/DyGLib), we are grateful to the authors for making their project codes publicly available.
 
 ## Citation
