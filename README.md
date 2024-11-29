@@ -5,7 +5,7 @@ Code for KDD2024 paper “Latent Diffusion-based Data Augmentation for Continuou
 
 ## Modified models 
 
-Since Conda needs to perform diffusion on the historical neighbor sequence of a target node, we made some modifications to the model implemented in DyGFormer. Although the original model can also use conda, it essentially only allows diffusion after computing all node embeddings, which means the diffusion sequence length is equivalent to the entire set of neighbors. By using the modified model, Conda can more effectively control the sequence length for diffusion. The modified models are in the file ```models_for_diffusion```
+Since Conda needs to perform diffusion on the historical neighbor sequence of a target node, we made some modifications to the model implemented in DyGFormer. Although the original model can also use conda, it essentially only allows diffusion after computing all node embeddings, which means the diffusion sequence length is equivalent to the entire set of neighbors. By using the modified model, Conda can more effectively control the sequence length for diffusion. The modified models are in the file ```models_for_diffusion```.
 
 ## Model Training
 
@@ -20,7 +20,7 @@ For the original model, we can run the following comands:
 python train_link_prediction.py --dataset_name wikipedia --model_name TCL --num_runs 5 --gpu 0 --val_ratio 0.1 --test_ratio 0.8
 ```
 
-The code for the modified model in the current project is a bit disorganized. We will integrate the modified model into the training code and continue updating it within a week.
+The code for the modified models in the current project is a bit disorganized. We will integrate the modified model into the training code and continue updating it within a week.
 
 
 ## Acknowledgments
