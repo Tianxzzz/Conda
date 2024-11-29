@@ -1,12 +1,4 @@
-import numpy as np
-import pandas as pd
 
-
-X_train = np.load('/data/FinAi_Mapping_Knowledge/qiyiyan/tyx/proj/data_train.npy', allow_pickle=True)
-X_test = np.load('/data/FinAi_Mapping_Knowledge/qiyiyan/tyx/proj/data_test.npy', allow_pickle=True)
-y_train = np.genfromtxt('/data/FinAi_Mapping_Knowledge/qiyiyan/tyx/proj/label_train.csv', delimiter=',')[1:, 1]
-vocab_map = np.load('/data/FinAi_Mapping_Knowledge/qiyiyan/tyx/proj/vocab_map.npy', allow_pickle=True)
-import enum
 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -382,7 +374,6 @@ def mean_flat(tensor):
 
 
 
-
 class DNN(nn.Module):
     """
     A deep neural network for the reverse process of latent diffusion.
@@ -482,91 +473,3 @@ def xavier_normal_initialization(module):
 
 
 
-def train_test_split_custom(X, y, test_size=0.3, random_state=None):
-    if random_state is not None:
-        np.random.seed(random_state)
-    indices = np.arange(X.shape[0])
-    np.random.shuffle(indices)
-    split_idx = int(len(indices) * (1 - test_size))
-    train_indices, val_indices = indices[:split_idx], indices[split_idx:]
-    return X[train_indices], X[val_indices], y[train_indices], y[val_indices]
-
-X_train, X_val, y_train, y_val = train_test_split_custom(X_train, y_train, test_size=0.3, random_state=42)
-mean = np.mean(X_train, axis=0)
-std = np.std(X_train, axis=0)
-
-
-std[std == 0] = 1
-
-X_train = (X_train - mean) / std
-X_val = (X_val - mean) / std
-X_test = (X_test - mean) / std
-
-
-
-class LogisticRegressionCustom:
-    def __init__(self, max_iter=1000, learning_rate=0.01, regularization=0.1):
-        self.max_iter = max_iter
-        self.learning_rate = learning_rate
-        self.regularization = regularization
-        self.weights = None
-        self.bias = None
-
-    def sigmoid(self, z):
-        return 1 / (1 + np.exp(-z))
-
-    def fit(self, X, y):
-        num_samples, num_features = X.shape
-        self.weights = np.zeros(num_features)
-        self.bias = 0
-
-        for _ in range(self.max_iter):
-            linear_model = np.dot(X, self.weights) + self.bias
-            predictions = self.sigmoid(linear_model)
-
-            dw = (1 / num_samples) * np.dot(X.T, (predictions - y)) + (self.regularization / num_samples) * self.weights
-            db = (1 / num_samples) * np.sum(predictions - y)
-
-            self.weights -= self.learning_rate * dw
-            self.bias -= self.learning_rate * db
-
-    def predict(self, X):
-        linear_model = np.dot(X, self.weights) + self.bias
-        probabilities = self.sigmoid(linear_model)
-        return (probabilities >= 0.5).astype(int)
-
-
-clf = LogisticRegressionCustom(max_iter=1000, learning_rate=0.01)
-clf.fit(X_train, y_train)
-
-y_val_pred = clf.predict(X_val)
-
-
-def f1_score_macro(y_true, y_pred):
-    classes = np.unique(y_true)
-    f1_scores = []
-    for cls in classes:
-        tp = np.sum((y_true == cls) & (y_pred == cls))
-        fp = np.sum((y_true != cls) & (y_pred == cls))
-        fn = np.sum((y_true == cls) & (y_pred != cls))
-        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-        f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
-        f1_scores.append(f1)
-    return np.mean(f1_scores)
-
-f1_macro = f1_score_macro(y_val, y_val_pred)
-print(f"Macro F1 Score on validation set: {f1_macro:.4f}")
-
-
-y_test_pred = clf.predict(X_test)
-y_test_pred = y_test_pred.astype(int)
-print(y_test_pred)
-
-
-submission_df = pd.DataFrame({
-    'ID': range(len(y_test_pred)),
-    'label': y_test_pred
-})
-
-submission_df.to_csv('predictions.csv', index=False)
