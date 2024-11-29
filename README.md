@@ -20,6 +20,7 @@ For the original model, we can run the following comands:
 python train_link_prediction.py --dataset_name wikipedia --model_name TCL --num_runs 5 --gpu 0 --val_ratio 0.1 --test_ratio 0.8
 ```
 
+The code for the modified model in the current project is a bit disorganized. We will integrate the modified model into the training code and continue updating it within a week.
 
 
 ## Acknowledgments
